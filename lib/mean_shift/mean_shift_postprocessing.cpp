@@ -66,8 +66,6 @@ std::vector<Cluster_t> _form_clusters_planar(
 		}
 	}
 
-	// Merge clusters based on centroids distance
-//	_merge_clusters( clusters , m , agg_th );
 	return clusters;
 }
 
@@ -110,7 +108,5 @@ std::vector<Cluster_t> _form_clusters_packed(
 		}
 	}
 
-	// Merge clusters based on centroids distance
-//	_merge_clusters( clusters , m , agg_th );
 	return clusters;
 }

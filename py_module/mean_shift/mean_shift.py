@@ -1,20 +1,9 @@
 import mean_shift._mean_shift as ms
 import numpy as np
 
-# MSKernelType = {
-#     "simple": 0,
-#     "opt": 1,
-#     "opt_bounded": 2,
-#     "tiled": 3,
-#     "single": 4,
-#     "single_tiled": 5
-# }
-
 MSKernelType = {
     "simple": 0,
-    "tiled": 1,
-    "tiled_fixed": 2,
-    "experimental": 3
+    "tiled": 1
 }
 def __get_kernel_type_id( kernel_type: str ):
     if kernel_type not in MSKernelType:

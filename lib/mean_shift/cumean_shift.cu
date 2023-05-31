@@ -62,53 +62,6 @@ __host__ void launch_ms_kernel_tiled(
 	cudaEventRecord( ms_end , stream );
 }
 
-__host__ void launch_ms_kernel_tiled_fixed(
-		float *data , unsigned int n , unsigned int m ,
-		float h , float tol , unsigned int max_iter ,
-		float *conv_pts , unsigned int block_size ,
-		cudaDeviceProp props , cudaStream_t stream ,
-		cudaEvent_t ms_start , cudaEvent_t ms_end ){
-
-	if( block_size == 0 )
-		block_size = 32;
-	dim3 blockSize( block_size );
-	dim3 gridSize( (int)ceil(n/(float)blockSize.x) );
-
-	std::size_t shmem_size = 2 * m * blockSize.x * sizeof(float) + sizeof(int);
-
-	cudaEventRecord( ms_start , stream );
-	_mean_shift_kernel_tiled_fixed<<< gridSize , blockSize , shmem_size , stream >>>
-		( data , n , m , h , tol , max_iter , conv_pts );
-	cudaStreamSynchronize( stream );
-	printLastCudaError( "_mean_shift_kernel_tiled_fixed" );
-	cudaEventRecord( ms_end , stream );
-}
-
-__host__ void launch_ms_kernel_exp(
-		float * data, unsigned int n, unsigned int m,
-		float h, float tol, unsigned int max_iter,
-		float *conv_pts, unsigned int block_size,
-		cudaDeviceProp props, cudaStream_t stream,
-		cudaEvent_t ms_start, cudaEvent_t ms_end ){
-
-	if( block_size == 0 )
-		block_size = 32;
-	dim3 blockSize( block_size );
-	dim3 gridSize( (int)ceil(n/(float)blockSize.x) );
-
-	// simple, double buffered
-	std::size_t shmem_size = 2 * m * blockSize.x * sizeof(float) + sizeof(int);
-	// simple packed access
-//	std::size_t shmem_size = m * blockSize.x * sizeof(float);
-
-	cudaEventRecord( ms_start , stream );
-	_mean_shift_kernel_exp<<< gridSize , blockSize , shmem_size , stream >>>
-		( data , n , m , h , tol , max_iter , conv_pts );
-	cudaStreamSynchronize(stream);
-	printLastCudaError( "_mean_shift_kernel_exp" );
-	cudaEventRecord( ms_end , stream );
-}
-
 void (*kernel_launchers[])
 		(float* , unsigned int , unsigned int ,
 	     float , float , unsigned int ,
@@ -116,9 +69,7 @@ void (*kernel_launchers[])
 		 cudaDeviceProp , cudaStream_t ,
 		 cudaEvent_t , cudaEvent_t ) = {
 	launch_ms_kernel_simple ,
-	launch_ms_kernel_tiled ,
-	launch_ms_kernel_tiled_fixed ,
-	launch_ms_kernel_exp
+	launch_ms_kernel_tiled
 };
 
 }
@@ -230,19 +181,15 @@ void get_kernel_launch_info(
 		dim3 blockSize , unsigned int shmem_size ){
 
 	// CUDA 12 / CC 8.9
-	int REGS_PER_THREAD[4] = {
+	int REGS_PER_THREAD[2] = {
 		40 , // simple
 		56 , // tiled
-		48 , // tiled_fixed
-		40   // experimental
 	};
 
 	// CUDA 11.7 / CC 6.1
-//	int REGS_PER_THREAD[4] = {
+//	int REGS_PER_THREAD[2] = {
 //		32 , // simple
 //		54 , // tiled
-//		48 , // tiled_fixed
-//		50   // experimental
 //	};
 
 	info->maxWarpsPerSM = (unsigned int)(props.maxThreadsPerMultiProcessor/(float)props.warpSize);

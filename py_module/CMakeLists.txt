@@ -4,7 +4,6 @@ project(mean_shift_module CUDA CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -14,9 +13,6 @@ if(NOT CMAKE_BUILD_TYPE) # default built type to Release
 	set(CMAKE_BUILD_TYPE Release)
 endif()
 message( STATUS "Build type: ${CMAKE_BUILD_TYPE}" )
-
-# removes the default optimization level from the compile flags 
-# string( REGEX REPLACE "\\-O(1|2|3)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 
 message(STATUS "Configured CUDA archs: ${CMAKE_CUDA_ARCHITECTURES}")
 
@@ -29,8 +25,6 @@ if(NOT DEFINED CMAKE_CUDA_STANDARD)
 	set(CMAKE_CUDA_STANDARD 11)
 	set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 endif()
-
-#set(CMAKE_CUDA_ARCHITECTURES 61)
 
 # Setup python and numpy
 find_package(Python REQUIRED Development NumPy)
@@ -47,10 +41,9 @@ add_library(mean_shift_module SHARED
 	${SOURCE_DIR}/cumean_shift_py_wrappers.cu
 	${SOURCE_DIR}/mean_shift_py_module.h  
 	${SOURCE_DIR}/mean_shift_py_module.cpp )
-#target_compile_options(mean_shift_module PRIVATE $<$<CONFIG:RELEASE>:-O3>)
-target_link_libraries(mean_shift_module PRIVATE Python::Python Python::NumPy mean_shift_lib)
-#set_property( TARGET mean_shift_module PROPERTY CUDA_SEPARABLE_COMPILATION ON)
-#target_compile_options(mean_shift_module PRIVATE $<$<CONFIG:Debug>:$<$<COMPILE_LANGUAGE:CUDA>:
-#	--generate-line-info
-#>>)	 
+target_link_libraries(mean_shift_module
+	PRIVATE mean_shift 
+	PRIVATE Python::Python 
+	PRIVATE Python::NumPy )
+#set_property( TARGET mean_shift_module PROPERTY CUDA_SEPARABLE_COMPILATION ON)	 
 	

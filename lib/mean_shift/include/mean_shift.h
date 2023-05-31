@@ -8,26 +8,6 @@
 
 #include "../mean_shift_postprocessing.h"
 
-//float _sq_dist( float const* const x , float const* const xi ,
-//				const unsigned long m );
-//
-//float _g_normal( float const* const x , float const* const xi,
-//				 const unsigned int m , const float h );
-//
-//void _ms_shift_p( float const* const p , float const* const data ,
-//				  float* p_next ,
-//				  const unsigned long n, const unsigned int m ,
-//				  const float h );
-//
-//bool _ms_convergence( float const* const msv , const unsigned int m ,
-//					  const float tol );
-//
-//void _ms_procedure( float const* const start , float const* const data ,
-//					float * convergence_p ,
-//				    const unsigned long n , const unsigned int m ,
-//				    const float h , const float tol,
-//				    const unsigned int max_iter );
-
 namespace MeanShift {
 namespace seq{
 

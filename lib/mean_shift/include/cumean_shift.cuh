@@ -14,8 +14,6 @@ namespace cuda {
 
 const int KERNEL_TYPE_SIMPLE = 0;
 const int KERNEL_TYPE_TILED = 1;
-const int KERNEL_TYPE_TILED_FIXED = 2;
-const int KERNEL_TYPE_EXPERIMENTAL = 3;
 
 typedef struct KernelLaunchInfo {
 	unsigned int maxWarpsPerSM;

@@ -184,13 +184,12 @@ PyObject* cu_ms_kernel_launch_info( PyObject* self , PyObject* args ){
 
 	dim3 blockSize( block_size );
 	unsigned int shmem_size;
-//	unsigned int tile_size;
-//	if( kernel_type == MeanShift::cuda::MSKernelType::SIMPLE ){
+
 	if( kernel_type == MeanShift::cuda::KERNEL_TYPE_SIMPLE ){
 		tile_size = 0;
 		shmem_size = blockSize.x * m * sizeof(float);
 	}
-//	if( kernel_type == MeanShift::cuda::MSKernelType::TILED ){
+
 	if( kernel_type == MeanShift::cuda::KERNEL_TYPE_TILED ){
 		if( tile_size == 0 )
 			tile_size = floorf(((props.sharedMemPerMultiprocessor/(float)props.maxBlocksPerMultiProcessor)
@@ -198,21 +197,12 @@ PyObject* cu_ms_kernel_launch_info( PyObject* self , PyObject* args ){
 		tile_size = block_size;
 		shmem_size = 3*blockSize.x*m*sizeof(float) + sizeof(int);
 	}
-	if( kernel_type == MeanShift::cuda::KERNEL_TYPE_TILED_FIXED ){
-		tile_size = block_size;
-		shmem_size = 2 * blockSize.x * m * sizeof(float) + sizeof(int);
-	}
-	if( kernel_type == MeanShift::cuda::KERNEL_TYPE_EXPERIMENTAL ){
-		tile_size = 0;
-		shmem_size = 2 * blockSize.x * m * sizeof(float) + sizeof(int);
-	}
 
 	MeanShift::cuda::KernelLaunchInfo info;
 	MeanShift::cuda::get_kernel_launch_info( &info , props, kernel_type, blockSize, shmem_size );
 
 	PyObject* pyKernelInfo = PyDict_New();
 	PyDict_SetItemString( pyKernelInfo , "block_size" , PyLong_FromUnsignedLong( blockSize.x ) );
-//	PyDict_SetItemString( pyInfo , "shmem_size" , PyLong_FromUnsignedLong(shmem_size) );
 	PyDict_SetItemString( pyKernelInfo , "warps_per_block" , PyLong_FromUnsignedLong(info.warpsPerBlock) );
 	PyDict_SetItemString( pyKernelInfo , "tile_size" , PyLong_FromUnsignedLong(tile_size) );
 	PyDict_SetItemString( pyKernelInfo , "max_warps_per_SM" , PyLong_FromUnsignedLong(info.maxWarpsPerSM) );
@@ -242,7 +232,6 @@ PyObject* get_CUDA_device_info( PyObject* self , PyObject* args ){
 	else{
 		deviceID = gpuDeviceInit(deviceID);
 		if( deviceID < 0 ){
-//			std::cout << "failed to init CUDA device " << deviceID << std::endl;
 			return Py_None;
 		}
 	}
