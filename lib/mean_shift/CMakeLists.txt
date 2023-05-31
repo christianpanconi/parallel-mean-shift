@@ -23,8 +23,6 @@ if(NOT DEFINED CMAKE_CUDA_STANDARD)
 	set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 endif()
 
-#set(CMAKE_CUDA_ARCHITECTURES 61)
-
 # Library target
 add_library(mean_shift SHARED
 	ms_utils.h 
@@ -35,7 +33,6 @@ add_library(mean_shift SHARED
 	include/cumean_shift.cuh
 	cumean_shift_kernels.cuh
 	cumean_shift_kernels.cu
-	cumean_shift_kernels_experimental.cu
 	cumean_shift.cu
 	mean_shift_postprocessing.h
 	mean_shift_postprocessing.cpp )
