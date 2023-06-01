@@ -24,7 +24,6 @@ parser.add_argument( "-d" , "--dataset" )
 parser.add_argument( "-tf" , "--test-folder" )
 parser.add_argument( "-bmkit" , "--benchmark-iter", type=int , default=10 )
 parser.add_argument( "-s" , "--sequential" , action="store_true" )
-# parser.add_argument( "--shuffle" , action="store_true" )
 parser.add_argument( "-n" , "--no-out" , action="store_true" )
 parser.add_argument( "--sorting" , default="raster" , choices=["raster","shuffle","blocks"] )
 parser.add_argument( "--sorting-block-size" , type=int , default=8 )
@@ -35,7 +34,7 @@ parser.add_argument( "-msaggth" , "--meanshift-agg-th" , type=float , default=0.
 parser.add_argument( "-msmaxit" , "--meanshift-max-iter" , type=int , default=100 )
 # CUDA specific args
 parser.add_argument( "-cudakt" , "--cuda-kernel-type" , default="simple" ,
-                     choices=["simple","tiled","tiled_fixed","experimental"] )
+                     choices=["simple","tiled"] )
 parser.add_argument( "-cudabs" , "--cuda-block-size" , type=int , default=32 )
 args = parser.parse_args()
 
@@ -57,20 +56,19 @@ else:
 data_path = TEST_FOLDER + data_path
 
 # BENCHMARK PARAMETERS
-BMK_ITS = args.benchmark_iter # BMK_ITS = 2
-SEQ = args.sequential # SEQ = False
-# SHUFFLE = args.shuffle # SHUFFLE = False
+BMK_ITS = args.benchmark_iter
+SEQ = args.sequential
 SORTING = args.sorting
 if SORTING == "blocks":
     SORTING_BLOCK_SIZE = args.sorting_block_size
 # MEAN SHIFT PARAMETERS
-H = args.meanshift_h # H = 0.005
-TOL = args.meanshift_tol # TOL = 0.001
-AGG_TH = args.meanshift_agg_th # AGG_TH = 0.02
-MAX_ITER = args.meanshift_max_iter # MAX_ITER = 100
+H = args.meanshift_h 
+TOL = args.meanshift_tol 
+AGG_TH = args.meanshift_agg_th 
+MAX_ITER = args.meanshift_max_iter
 # CUDA KERNEL PARAMETERS
-KERNEL_TYPE = args.cuda_kernel_type # KERNEL_TYPE="tiled"
-BLOCK_SIZE = args.cuda_block_size # BLOCK_SIZE = 32
+KERNEL_TYPE = args.cuda_kernel_type
+BLOCK_SIZE = args.cuda_block_size
 
 # Load dataset
 if args.image is not None:
@@ -84,7 +82,6 @@ print("Dataset shape: {0}".format(dataset.shape))
 # Kernel info:
 if not SEQ:
     print("Block Size: ({0},1,1)\t|\tGrid Size: ({1},1,1)\n".format(
-        # BLOCK_SIZE, int(ceil((img_size[0] * img_size[1]) / BLOCK_SIZE))
         BLOCK_SIZE, int(ceil((dataset.shape[0]) / BLOCK_SIZE))
     ))
     kernel_info = ms.cu_ms_kernel_info(kernel_type=KERNEL_TYPE,n_dims=5,block_size=BLOCK_SIZE)
@@ -117,8 +114,6 @@ print( "Started at {0}".format(datetime.datetime.now()) )
 results = []
 for i in range(BMK_ITS):
     print( "Benchmark run: {0} / {1}".format(i+1,BMK_ITS).ljust(40), end="")
-    # if SHUFFLE:
-    #     np.random.shuffle(dataset)
     if SORTING == "shuffle":
         np.random.shuffle(dataset)
     result = mean_shift_clustering()
@@ -154,9 +149,7 @@ print( "-"*40 )
 # Save benchmark result to file
 if not args.no_out:
     bmk_result = {
-        # "kernel_launch_info": kernel_info,
         "bmk_it": BMK_ITS ,
-        # "shuffle": SHUFFLE ,
         "sorting": SORTING ,
         "results": results ,
         "ms_params": { "h": H, "tol": TOL, "agg_th": AGG_TH , "max_iter": MAX_ITER } ,
