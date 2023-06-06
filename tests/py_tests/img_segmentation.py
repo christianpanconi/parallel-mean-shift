@@ -8,7 +8,7 @@ import datetime
 from PIL import Image
 
 # Load image
-IMAGE_PATH = "../images/urban2/256/test.jpg" # !! Change image path
+IMAGE_PATH = "../images/urban2/256/test.jpg"
 IMAGE_NAME = IMAGE_PATH.split("/")[-1]
 IMAGE_NAME = IMAGE_NAME[:IMAGE_NAME.rfind(".")]
 dataset, image_size = load_image_dataset( IMAGE_PATH )
@@ -32,6 +32,14 @@ if SORTING_BLOCK:
 print( "Performing Mean Shift Clustering ..." )
 print( "Started at {0}".format( datetime.datetime.now() ) )
 
+# Sequential
+# result = ms.ms_clustering(
+#     dataset , starts=dataset ,
+#     h=H , tol=TOL , agg_th=AGG_TH ,
+#     max_iter=MAX_ITER
+# )
+
+# CUDA
 result = ms.cu_ms_clustering(
     dataset ,
     h=H , tol=TOL , agg_th=AGG_TH ,

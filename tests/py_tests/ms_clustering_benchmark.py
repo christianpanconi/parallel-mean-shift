@@ -1,8 +1,6 @@
 import mean_shift as ms
 from py_utils.dataset import load_image_dataset
 from py_utils.dataset import sort_blocks_image_dataset
-from py_utils.plots import plot_img_segmentation_result
-from py_utils.result import save_segmentation_result_to_file
 
 import json
 import numpy as np
