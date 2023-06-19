@@ -14,26 +14,26 @@ import datetime
 import argparse
 parser = argparse.ArgumentParser(
     prog="python3 ms_clustering_benchmark.py",
-    description="Benchmark for the CUDA Mean Shift."
+    description="Benchmark for the CUDA Mean Shift.",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
 )
 # BENCHMARK args
-parser.add_argument( "-i" , "--image" )
-parser.add_argument( "-d" , "--dataset" )
-parser.add_argument( "-tf" , "--test-folder" )
-parser.add_argument( "-bmkit" , "--benchmark-iter", type=int , default=10 )
-parser.add_argument( "-s" , "--sequential" , action="store_true" )
-parser.add_argument( "-n" , "--no-out" , action="store_true" )
-parser.add_argument( "--sorting" , default="raster" , choices=["raster","shuffle","blocks"] )
-parser.add_argument( "--sorting-block-size" , type=int , default=8 )
+parser.add_argument( "-i" , "--image" , help="An image to use as dataset." )
+parser.add_argument( "-d" , "--dataset" , help="A JSON file containing the dataset." )
+parser.add_argument( "-tf" , "--test-folder", help="Specifies the folder in which to output the benchmark report." )
+parser.add_argument( "-bmkit" , "--benchmark-iter", type=int , default=10, help="Specifies the number of benchmark repetitions." )
+parser.add_argument( "-s" , "--sequential" , action="store_true" , help="Runs the sequential version of the Mean Shift Clustering." )
+parser.add_argument( "-n" , "--no-out" , action="store_true" , help="If specified, no output report is produced" )
+parser.add_argument( "--sorting" , default="raster" , choices=["raster","shuffle","blocks"] , help="Specifies the order in which the data points are provided to the Mean Shift Clustering algorithm." )
+parser.add_argument( "--sorting-block-size" , type=int , default=8, help="In case of 'blocks' sorting specifies the block size." )
 # MS params args
-parser.add_argument( "-msh" , "--meanshift-h" , type=float, default=0.005 )
-parser.add_argument( "-mstol" , "--meanshift-tol" , type=float , default=0.001 )
-parser.add_argument( "-msaggth" , "--meanshift-agg-th" , type=float , default=0.02 )
-parser.add_argument( "-msmaxit" , "--meanshift-max-iter" , type=int , default=100 )
+parser.add_argument( "-msh" , "--meanshift-h" , type=float, default=0.005, help="Bandwidth parameter (h)." )
+parser.add_argument( "-mstol" , "--meanshift-tol" , type=float , default=0.001 , help="Mean Shift stopping criterion tolerance (epsilon/tol)" )
+parser.add_argument( "-msaggth" , "--meanshift-agg-th" , type=float , default=0.02 , help="Clustering aggregation threshold (delta/agg_th)" )
+parser.add_argument( "-msmaxit" , "--meanshift-max-iter" , type=int , default=100 , help="Maximum number of iteration for each point." )
 # CUDA specific args
-parser.add_argument( "-cudakt" , "--cuda-kernel-type" , default="simple" ,
-                     choices=["simple","tiled"] )
-parser.add_argument( "-cudabs" , "--cuda-block-size" , type=int , default=32 )
+parser.add_argument( "-cudakt" , "--cuda-kernel-type" , default="simple" , choices=["simple","tiled"] , help="Cuda kernel type" )
+parser.add_argument( "-cudabs" , "--cuda-block-size" , type=int , default=32 , help="Cuda kernel thread blocks size" )
 args = parser.parse_args()
 
 if args.test_folder is None:
@@ -51,7 +51,7 @@ elif args.image is not None and args.dataset is not None:
     exit(0)
 else:
     data_path = args.image if args.image is not None else args.dataset
-data_path = TEST_FOLDER + data_path
+# data_path = TEST_FOLDER + data_path
 
 # BENCHMARK PARAMETERS
 BMK_ITS = args.benchmark_iter
